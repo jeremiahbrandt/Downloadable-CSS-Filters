@@ -11,7 +11,7 @@
     body {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        grid-template-areas: 'originalImage filteredImage' 'filterControl filterControl';
+        grid-template-areas: 'originalImage filteredImage' 'filterControl filterControl' 'buttons buttons';
         text-align: center;
     }
 
@@ -58,6 +58,26 @@
         background-color: #0faaaa;
         border-radius: 50%;
     }
+
+    #buttons {
+        grid-area: buttons;
+
+        /* display: grid;
+        justify-items: center; */
+    }
+
+    #buttons button {
+        width: 80%;
+        height: 60px;
+        border: none;
+        border-radius: 20px;
+        background-color: #104dd1;
+        color: #d8e5e7;
+    }
+
+    #buttons button:hover {
+        background-color: #003097;
+    }
 </style>
 
 <script>
@@ -86,12 +106,9 @@ const createPropertySelectorNode = (filter) => {
     nodeTitle.appendChild(titleText);
     filterNode.appendChild(nodeTitle);
 
-    // Slider value
-    const valueNode = document.createElement("span");
-    const valueText = document.createTextNode(``);
-
     // Slider
     const sliderNode = document.createElement("input");
+    sliderNode.className = "slider";
     sliderNode.setAttribute("type", "range");
     sliderNode.setAttribute("min", filter.min);
     sliderNode.setAttribute("max", filter.max);
@@ -190,6 +207,18 @@ const populateCSSFilters = () => {
     });
 }
 
+const resetFilters = () => {
+    document.querySelector("#filteredImage").src = img.src;
+
+    const sliderNodes = document.querySelectorAll('.slider');
+    sliderNodes.forEach(sliderNode => {
+        const filter = cssFilters.find(filter => filter.name === sliderNode.name);
+        sliderNode.value = filter.default;
+        document.querySelector(`#${filter.name}-title`).innerText = `${filter.name}: ${sliderNode.value}${filter.measurement}`;
+    });
+
+}
+
 window.onload = function() {
     document.querySelector("#originalImage").src = img.src;
     document.querySelector("#filteredImage").src = img.src;
@@ -216,6 +245,9 @@ window.onload = function() {
     </div>
     <!-- JS populates #filters with individual filters -->
     <div id="filters">
+    </div>
+    <div id="buttons">
+        <button onclick="resetFilters()">Reset</button>
     </div>
 </body>
 </html>
