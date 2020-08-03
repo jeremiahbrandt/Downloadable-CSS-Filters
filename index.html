@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JS / CSS Filters</title>
+<style>
+    :root {
+        --slider-size: 20px;
+    }
+
+    body {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-areas: 'originalImage filteredImage' 'filterControl filterControl';
+        text-align: center;
+    }
+
+    #original-image-wrapper {
+        grid-area: originalImage;
+    }
+
+    #filtered-image-wrapper {
+        grid-area: filteredImage;
+    }
+
+    #filters {
+        grid-area: filterControl;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: 20px;
+    }
+
+    h2 {
+        font-size: 1em;
+    }
+
+    canvas {
+        display: none;
+    }
+
+    img {
+        width: 400px;
+        height: 200px;
+    }
+
+    input {
+        -webkit-appearance: none;
+        width: 100%;
+        height: var(--slider-size);
+        border: none;
+        border-radius: 20px;
+        background: #970000;
+    }
+    input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: var(--slider-size);
+        width: var(--slider-size);
+        background-color: #0faaaa;
+        border-radius: 50%;
+    }
+</style>
+
+<script>
+// Default image
+const imgURL = "https://source.unsplash.com/random/400x200";
+
+// Filter format:
+const cssFilters = [];
+
+// Global variable used for consistent URLs
+var img = new Image();
+img.crossOrigin = ""; 
+img.src = imgURL;
+
+// Re-useable global variable
+const appliedFilters = [];
+
+const createPropertySelectorNode = (filter) => {
+    // Filter Node (parent)
+    const filterNode = document.createElement("div");
+
+    // Title 
+    const nodeTitle = document.createElement("h2");
+    nodeTitle.setAttribute("id", `${filter.name}-title`)
+    const titleText = document.createTextNode(`${filter.name}: ${filter.default} ${filter.measurement}`);
+    nodeTitle.appendChild(titleText);
+    filterNode.appendChild(nodeTitle);
+
+    // Slider value
+    const valueNode = document.createElement("span");
+    const valueText = document.createTextNode(``);
+
+    // Slider
+    const sliderNode = document.createElement("input");
+    sliderNode.setAttribute("type", "range");
+    sliderNode.setAttribute("min", filter.min);
+    sliderNode.setAttribute("max", filter.max);
+    sliderNode.setAttribute("name", filter.name);
+    sliderNode.setAttribute("value", filter.default);
+    sliderNode.setAttribute("onchange", `updateImageAttribute(this, '${filter.measurement}')`);
+    filterNode.appendChild(sliderNode);
+
+    document.querySelector("#filters").append(filterNode);
+}
+
+const updateImageAttribute = (filterNode, filterMeasurement) => {
+    const canvas = document.querySelector("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    const ctx = canvas.getContext("2d");
+
+    // update applied filters
+    if (typeof ctx.filter !== "undefined") {
+        const filterIndex = appliedFilters.findIndex(filter => filter.name === filterNode.name);
+        if(filterIndex === -1) {
+            appliedFilters.push({name: filterNode.name, value: filterNode.value, measurementSymbol: filterMeasurement});
+        } else {
+            appliedFilters[filterIndex].value = filterNode.value;
+        }
+    }
+
+    // apply filter
+    ctx.filter = "none";
+    appliedFilters.forEach(filter => {
+        if(ctx.filter == 'none') {
+            ctx.filter = (`${filter.name}(${filter.value}${filter.measurementSymbol})`);
+        } else {
+            ctx.filter += (` ${filter.name}(${filter.value}${filter.measurementSymbol})`);
+        }
+    });
+    
+    // Update slider title text
+    document.getElementById(`${filterNode.name}-title`).innerText = `${filterNode.name}: ${filterNode.value}${filterMeasurement}`;
+
+    ctx.drawImage(img, 0, 0);
+
+    document.querySelector("#filteredImage").src = canvas.toDataURL();
+}
+
+const populateCSSFilters = () => {
+    cssFilters.push({
+        name: 'blur',
+        default: 0,
+        min: 0,
+        max: 10,
+        measurement: 'px'
+    });
+    cssFilters.push({
+        name: 'brightness',
+        default: 100,
+        min: 50,
+        max: 100,
+        measurement: '%'
+    });
+    cssFilters.push({
+        name: 'contrast',
+        default: 100,
+        min: 0,
+        max: 200,
+        measurement: '%'
+    });
+    cssFilters.push({
+        name: 'grayscale',
+        default: 0,
+        min: 0,
+        max: 150,
+        measurement: '%'
+    });
+    cssFilters.push({
+        name: 'invert',
+        default: 0,
+        min: 0,
+        max: 100,
+        measurement: '%'
+    });
+    cssFilters.push({
+        name: 'saturate',
+        default: 0,
+        min: 0,
+        max: 100,
+        measurement: '%'
+    });
+    cssFilters.push({
+        name: 'sepia',
+        default: 0,
+        min: 0,
+        max: 100,
+        measurement: '%'
+    });
+}
+
+window.onload = function() {
+    document.querySelector("#originalImage").src = img.src;
+    document.querySelector("#filteredImage").src = img.src;
+
+    populateCSSFilters();
+
+    cssFilters.forEach(filter => {
+        createPropertySelectorNode(filter);
+    })
+}
+
+</script>
+</head>
+<body>
+    <!-- Canvas is used to change image properties, and is not displayed -->
+    <canvas></canvas>
+    <div id="original-image-wrapper">
+        <h1>Original Image</h1>
+        <img id="originalImage">
+    </div>
+    <div id="filtered-image-wrapper">
+        <h1>Filtered Image</h1>
+        <img id="filteredImage">
+    </div>
+    <!-- JS populates #filters with individual filters -->
+    <div id="filters">
+    </div>
+</body>
+</html>
