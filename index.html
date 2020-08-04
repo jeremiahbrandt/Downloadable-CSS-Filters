@@ -77,8 +77,8 @@
     svg {
         fill: none;
         stroke: #020000;
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
     }
 
     #buttons {
@@ -140,7 +140,6 @@ const createFilterSliderNode = (filter) => {
     // Reset button node
     const resetNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     resetNode.setAttribute("class", "reset-button");
-    resetNode.setAttribute("viewbox", "0 0 24 24");
     // SVG Paths
     const pathOne = document.createElementNS("http://www.w3.org/2000/svg", "path");
     pathOne.setAttribute("stroke", "none");
@@ -263,6 +262,26 @@ const populateCSSFilters = () => {
     });
 }
 
+const incrementFilter = (filterName) => {
+    const node = document.getElementsByName(filterName)[0];
+    const filter = cssFilters.find(filter => filter.name === filterName);
+
+    if(node.value < filter.max) {
+        node.setAttribute("value", parseInt(node.value) + 1);
+        applyFilter(node, filter.measurement);
+    }
+}
+
+const decrementFilter = (filterName) => {
+    const node = document.getElementsByName(filterName)[0];
+    const filter = cssFilters.find(filter => filter.name === filterName);
+
+    if(node.value > filter.min) {
+        node.setAttribute("value", parseInt(node.value) - 1);
+        applyFilter(node, filter.measurement);
+    }
+}
+
 const resetFilter = (filterName) => {
     const filter = cssFilters.find(filter => filter.name === filterName);
     const node = Array.from(document.querySelectorAll('.slider')).find(node => node.name === filterName);
@@ -306,6 +325,7 @@ window.onload = function() {
     </div>
     <div id="buttons">
         <button onclick="resetAllFilters()">Reset All Filters</button>
+        <button onclick="decrementFilter('opacity')">Increment Blur</button>
     </div>
 </body>
 </html>
