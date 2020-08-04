@@ -1,0 +1,106 @@
+:root {
+    --slider-size: 40px;
+}
+
+body {
+    display: grid;
+    grid-template-areas: 'originalImage filteredImage' 'filterControl filterControl' 'buttons buttons';
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto 50px;
+    grid-column-gap: 10px;
+    text-align: center;
+}
+
+#original-image-wrapper {
+    grid-area: originalImage;
+}
+
+#filtered-image-wrapper {
+    grid-area: filteredImage;
+}
+
+#filters {
+    grid-area: filterControl;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 20px;
+}
+
+.filter {
+    display: grid;
+    grid-template-areas: 'title filterButtons' 'slider slider';
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+}
+
+.filter h2 {
+    grid-area: title;
+    font-size: 1em;
+}
+
+canvas {
+    display: none;
+}
+
+img {
+    width: 100%;
+    height: auto;
+}
+
+.filter-buttons {
+    grid-area: 'filterButtons';
+}
+
+.filter input {
+    grid-area: slider;
+    -webkit-appearance: none;
+    width: 100%;
+    height: var(--slider-size);
+    border: none;
+    border-radius: 20px;
+    background: #970000;
+}
+input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: var(--slider-size);
+    width: var(--slider-size);
+    background-color: #0faaaa;
+    border-radius: 50%;
+}
+
+
+.reset-button {
+    grid-area: resetBtn;
+}
+
+.decrement-button {
+    grid-area: decrementBtn;
+}
+
+.increment-button {
+    grid-area: incrementBtn;
+}
+
+svg {
+    fill: none;
+    stroke: #020000;
+    width: 24px;
+    height: 24px;
+}
+
+#buttons {
+    grid-area: buttons;
+}
+
+button {
+    width: 80%;
+    height: 80%;
+    border: none;
+    border-radius: 20px;
+    background-color: #376fe7;
+    color: #d8e5e7;
+}
+
+button:hover {
+    background-color: #0d3faa;
+}
