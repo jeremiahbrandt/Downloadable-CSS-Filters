@@ -273,6 +273,10 @@ const applyFilter = (filterNode, filterMeasurement) => {
         }
     });
     
+    // TODO: Bug, increment % decrement buttons cannot be used after slider has been used manually
+    // Update slider value
+    // filterNode.setAttribute("value", filter);
+
     // Update slider title text
     document.getElementById(`${filterNode.name}-title`).innerText = `${filterNode.name}: ${filterNode.value} ${filterMeasurement}`;
 
