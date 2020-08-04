@@ -12,6 +12,7 @@
         display: grid;
         grid-template-areas: 'originalImage filteredImage' 'filterControl filterControl' 'buttons buttons';
         grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto auto 50px;
         grid-column-gap: 10px;
         text-align: center;
     }
@@ -31,7 +32,15 @@
         grid-column-gap: 20px;
     }
 
-    h2 {
+    .filter {
+        display: grid;
+        grid-template-areas: 'title resetBtn' 'slider slider';
+        grid-template-columns: repeat(2, 1fr);
+        align-items: center;
+    }
+
+    .filter h2 {
+        grid-area: title;
         font-size: 1em;
     }
 
@@ -44,7 +53,8 @@
         height: auto;
     }
 
-    input {
+    .filter input {
+        grid-area: slider;
         -webkit-appearance: none;
         width: 100%;
         height: var(--slider-size);
@@ -60,24 +70,25 @@
         border-radius: 50%;
     }
 
-    #buttons {
-        grid-area: buttons;
-
-        /* display: grid;
-        justify-items: center; */
+    .reset-button {
+        grid-area: resetBtn;
     }
 
-    #buttons button {
+    #buttons {
+        grid-area: buttons;
+    }
+
+    button {
         width: 80%;
-        height: 40px;
+        height: 80%;
         border: none;
         border-radius: 20px;
-        background-color: #104dd1;
+        background-color: #376fe7;
         color: #d8e5e7;
     }
 
-    #buttons button:hover {
-        background-color: #003097;
+    button:hover {
+        background-color: #0d3faa;
     }
 </style>
 
@@ -99,6 +110,7 @@ const appliedFilters = [];
 const createFilterSliderNode = (filter) => {
     // Filter node (parent)
     const filterNode = document.createElement("div");
+    filterNode.className = "filter";
 
     // Title node
     const nodeTitle = document.createElement("h2");
@@ -117,6 +129,14 @@ const createFilterSliderNode = (filter) => {
     sliderNode.setAttribute("name", filter.name);
     sliderNode.setAttribute("onchange", `applyFilter(this, '${filter.measurement}')`);
     filterNode.appendChild(sliderNode);
+
+    // Reset button node
+    const resetNode = document.createElement("button");
+    const resetText = document.createTextNode("Reset");
+    resetNode.appendChild(resetText);
+    resetNode.setAttribute("onclick", `resetFilter('${filter.name}')`);
+    resetNode.className = "reset-btn";
+    filterNode.appendChild(resetNode);
 
     document.querySelector("#filters").append(filterNode);
 }
@@ -142,7 +162,6 @@ const applyFilter = (filterNode, filterMeasurement) => {
     ctx.filter = "none";
     appliedFilters.forEach(filter => {
         if(ctx.filter == 'none') {
-            console.log('none');
             ctx.filter = (`${filter.name}(${filter.value}${filter.measurementSymbol})`);
         } else {
             ctx.filter += (` ${filter.name}(${filter.value}${filter.measurementSymbol})`);
@@ -265,7 +284,7 @@ window.onload = function() {
     <div id="filters">
     </div>
     <div id="buttons">
-        <button onclick="resetAllFilters()">Reset</button>
+        <button onclick="resetAllFilters()">Reset All Filters</button>
     </div>
 </body>
 </html>
