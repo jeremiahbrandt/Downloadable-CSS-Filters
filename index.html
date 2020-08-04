@@ -34,7 +34,7 @@
 
     .filter {
         display: grid;
-        grid-template-areas: 'title resetBtn' 'slider slider';
+        grid-template-areas: 'title filterButtons' 'slider slider';
         grid-template-columns: repeat(2, 1fr);
         align-items: center;
     }
@@ -51,6 +51,10 @@
     img {
         width: 100%;
         height: auto;
+    }
+
+    .filter-buttons {
+        grid-area: 'filterButtons';
     }
 
     .filter input {
@@ -70,8 +74,17 @@
         border-radius: 50%;
     }
 
+
     .reset-button {
         grid-area: resetBtn;
+    }
+
+    .decrement-button {
+        grid-area: decrementBtn;
+    }
+
+    .increment-button {
+        grid-area: incrementBtn;
     }
 
     svg {
@@ -137,6 +150,11 @@ const createFilterSliderNode = (filter) => {
     sliderNode.setAttribute("onchange", `applyFilter(this, '${filter.measurement}')`);
     filterNode.appendChild(sliderNode);
 
+
+    const buttonsParentNode = document.createElement("div");
+    buttonsParentNode.className = "filter-buttons";
+    filterNode.appendChild(buttonsParentNode);
+
     // Reset button node
     const resetNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     resetNode.setAttribute("class", "reset-button");
@@ -156,7 +174,74 @@ const createFilterSliderNode = (filter) => {
 
     resetNode.setAttribute("onclick", `resetFilter('${filter.name}')`);
     resetNode.className = "reset-btn";
-    filterNode.appendChild(resetNode);
+    buttonsParentNode.appendChild(resetNode);
+
+
+    // Decrement button node
+    const decrementNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    decrementNode.setAttribute("class", "decrement-button");
+    decrementNode.setAttribute("onclick", `decrementFilter('${filter.name}')`)
+    // SVG Paths
+    const decrementPathOne = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    decrementPathOne.setAttribute("stroke", "none");
+    decrementPathOne.setAttribute("d", "M0 0h24v24H0z");
+    decrementNode.appendChild(decrementPathOne);
+
+    const decrementLineOne = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    decrementLineOne.setAttribute("x1", "12");
+    decrementLineOne.setAttribute("y1", "5");
+    decrementLineOne.setAttribute("x2", "12");
+    decrementLineOne.setAttribute("y2", "19");
+    decrementNode.appendChild(decrementLineOne);
+
+    const decrementLineTwo = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    decrementLineTwo.setAttribute("x1", "18");
+    decrementLineTwo.setAttribute("y1", "13");
+    decrementLineTwo.setAttribute("x2", "12");
+    decrementLineTwo.setAttribute("y2", "19");
+    decrementNode.appendChild(decrementLineTwo);
+
+    const decrementLineThree = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    decrementLineThree.setAttribute("x1", "6" );
+    decrementLineThree.setAttribute("y1", "13");
+    decrementLineThree.setAttribute("x2", "12");
+    decrementLineThree.setAttribute("y2", "19");
+    decrementNode.appendChild(decrementLineThree);
+    buttonsParentNode.appendChild(decrementNode);
+
+
+    // Increment button node
+    const incrementNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    incrementNode.setAttribute("class", "increment-button");
+    incrementNode.setAttribute("onclick", `incrementFilter('${filter.name}')`)
+    // SVG Paths
+    const incrementPathOne = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    incrementPathOne.setAttribute("stroke", "none");
+    incrementPathOne.setAttribute("d", "M0 0h24v24H0z");
+    incrementNode.appendChild(incrementPathOne);
+
+    const incrementLineOne = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    incrementLineOne.setAttribute("x1", "12");
+    incrementLineOne.setAttribute("y1", "5");
+    incrementLineOne.setAttribute("x2", "12");
+    incrementLineOne.setAttribute("y2", "19");
+    incrementNode.appendChild(incrementLineOne);
+
+    const incrementLineTwo = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    incrementLineTwo.setAttribute("x1", "18");
+    incrementLineTwo.setAttribute("y1", "11");
+    incrementLineTwo.setAttribute("x2", "12");
+    incrementLineTwo.setAttribute("y2", "5");
+    incrementNode.appendChild(incrementLineTwo);
+
+    const incrementLineThree = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    incrementLineThree.setAttribute("x1", "6" );
+    incrementLineThree.setAttribute("y1", "11");
+    incrementLineThree.setAttribute("x2", "12");
+    incrementLineThree.setAttribute("y2", "5");
+    incrementNode.appendChild(incrementLineThree);
+    buttonsParentNode.appendChild(incrementNode);
+
 
     document.querySelector("#filters").append(filterNode);
 }
@@ -325,7 +410,6 @@ window.onload = function() {
     </div>
     <div id="buttons">
         <button onclick="resetAllFilters()">Reset All Filters</button>
-        <button onclick="decrementFilter('opacity')">Increment Blur</button>
     </div>
 </body>
 </html>
