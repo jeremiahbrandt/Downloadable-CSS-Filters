@@ -1,5 +1,5 @@
 // Default image
-const imgURL = "https://source.unsplash.com/random/400x200";
+let imgURL = "https://source.unsplash.com/random/400x200";
 
 // Filter format:
 const cssFilters = [];
@@ -270,6 +270,16 @@ const resetAllFilters = () => {
     });
 }
 
+const setImgURL = (url = imgURL) => {
+    resetAllFilters();
+
+    imgURL = url;
+    img.src = imgURL;
+
+    document.querySelector("#originalImage").src = img.src;
+    document.querySelector("#filteredImage").src = img.src;
+}
+
 window.onload = function() {
     document.querySelector("#originalImage").src = img.src;
     document.querySelector("#filteredImage").src = img.src;
@@ -278,5 +288,5 @@ window.onload = function() {
 
     cssFilters.forEach(filter => {
         createFilterSliderNode(filter);
-    })
+    });
 }
