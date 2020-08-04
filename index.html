@@ -10,8 +10,9 @@
 
     body {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
         grid-template-areas: 'originalImage filteredImage' 'filterControl filterControl' 'buttons buttons';
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: 10px;
         text-align: center;
     }
 
@@ -39,8 +40,8 @@
     }
 
     img {
-        width: 400px;
-        height: 200px;
+        width: 100%;
+        height: auto;
     }
 
     input {
@@ -92,35 +93,35 @@ var img = new Image();
 img.crossOrigin = ""; 
 img.src = imgURL;
 
-// Re-useable global variable
+// Global variable
 const appliedFilters = [];
 
-const createPropertySelectorNode = (filter) => {
-    // Filter Node (parent)
+const createFilterSliderNode = (filter) => {
+    // Filter node (parent)
     const filterNode = document.createElement("div");
 
-    // Title 
+    // Title node
     const nodeTitle = document.createElement("h2");
     nodeTitle.setAttribute("id", `${filter.name}-title`)
     const titleText = document.createTextNode(`${filter.name}: ${filter.default} ${filter.measurement}`);
     nodeTitle.appendChild(titleText);
     filterNode.appendChild(nodeTitle);
 
-    // Slider
+    // Slider node
     const sliderNode = document.createElement("input");
     sliderNode.className = "slider";
     sliderNode.setAttribute("type", "range");
     sliderNode.setAttribute("min", filter.min);
     sliderNode.setAttribute("max", filter.max);
-    sliderNode.setAttribute("name", filter.name);
     sliderNode.setAttribute("value", filter.default);
-    sliderNode.setAttribute("onchange", `updateImageAttribute(this, '${filter.measurement}')`);
+    sliderNode.setAttribute("name", filter.name);
+    sliderNode.setAttribute("onchange", `applyFilter(this, '${filter.measurement}')`);
     filterNode.appendChild(sliderNode);
 
     document.querySelector("#filters").append(filterNode);
 }
 
-const updateImageAttribute = (filterNode, filterMeasurement) => {
+const applyFilter = (filterNode, filterMeasurement) => {
     const canvas = document.querySelector("canvas");
     canvas.width = img.width;
     canvas.height = img.height;
@@ -141,6 +142,7 @@ const updateImageAttribute = (filterNode, filterMeasurement) => {
     ctx.filter = "none";
     appliedFilters.forEach(filter => {
         if(ctx.filter == 'none') {
+            console.log('none');
             ctx.filter = (`${filter.name}(${filter.value}${filter.measurementSymbol})`);
         } else {
             ctx.filter += (` ${filter.name}(${filter.value}${filter.measurementSymbol})`);
@@ -148,7 +150,7 @@ const updateImageAttribute = (filterNode, filterMeasurement) => {
     });
     
     // Update slider title text
-    document.getElementById(`${filterNode.name}-title`).innerText = `${filterNode.name}: ${filterNode.value}${filterMeasurement}`;
+    document.getElementById(`${filterNode.name}-title`).innerText = `${filterNode.name}: ${filterNode.value} ${filterMeasurement}`;
 
     ctx.drawImage(img, 0, 0);
 
@@ -185,6 +187,13 @@ const populateCSSFilters = () => {
         measurement: '%'
     });
     cssFilters.push({
+        name: 'hue-rotate',
+        default: 0,
+        min: 0,
+        max: 360,
+        measurement: 'deg'
+    });
+    cssFilters.push({
         name: 'invert',
         default: 0,
         min: 0,
@@ -192,10 +201,17 @@ const populateCSSFilters = () => {
         measurement: '%'
     });
     cssFilters.push({
-        name: 'saturate',
-        default: 0,
+        name: 'opacity',
+        default: 100,
         min: 0,
         max: 100,
+        measurement: '%'
+    });
+    cssFilters.push({
+        name: 'saturate',
+        default: 100,
+        min: 0,
+        max: 500,
         measurement: '%'
     });
     cssFilters.push({
@@ -207,16 +223,18 @@ const populateCSSFilters = () => {
     });
 }
 
-const resetFilters = () => {
-    document.querySelector("#filteredImage").src = img.src;
+const resetFilter = (filterName) => {
+    const filter = cssFilters.find(filter => filter.name === filterName);
+    const node = Array.from(document.querySelectorAll('.slider')).find(node => node.name === filterName);
+    node.value = filter.default;
 
-    const sliderNodes = document.querySelectorAll('.slider');
-    sliderNodes.forEach(sliderNode => {
-        const filter = cssFilters.find(filter => filter.name === sliderNode.name);
-        sliderNode.value = filter.default;
-        document.querySelector(`#${filter.name}-title`).innerText = `${filter.name}: ${sliderNode.value}${filter.measurement}`;
+    applyFilter(node, filter.measurement);
+}
+
+const resetAllFilters = () => {
+    cssFilters.forEach(filter => {
+        resetFilter(filter.name);
     });
-
 }
 
 window.onload = function() {
@@ -226,7 +244,7 @@ window.onload = function() {
     populateCSSFilters();
 
     cssFilters.forEach(filter => {
-        createPropertySelectorNode(filter);
+        createFilterSliderNode(filter);
     })
 }
 
@@ -247,7 +265,7 @@ window.onload = function() {
     <div id="filters">
     </div>
     <div id="buttons">
-        <button onclick="resetFilters()">Reset</button>
+        <button onclick="resetAllFilters()">Reset</button>
     </div>
 </body>
 </html>
