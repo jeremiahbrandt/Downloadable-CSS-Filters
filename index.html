@@ -74,6 +74,13 @@
         grid-area: resetBtn;
     }
 
+    svg {
+        fill: none;
+        stroke: #020000;
+        width: 30px;
+        height: 30px;
+    }
+
     #buttons {
         grid-area: buttons;
     }
@@ -131,9 +138,23 @@ const createFilterSliderNode = (filter) => {
     filterNode.appendChild(sliderNode);
 
     // Reset button node
-    const resetNode = document.createElement("button");
-    const resetText = document.createTextNode("Reset");
-    resetNode.appendChild(resetText);
+    const resetNode = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    resetNode.setAttribute("class", "reset-button");
+    resetNode.setAttribute("viewbox", "0 0 24 24");
+    // SVG Paths
+    const pathOne = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathOne.setAttribute("stroke", "none");
+    pathOne.setAttribute("d", "M0 0h24v24H0z");
+    resetNode.appendChild(pathOne);
+
+    const pathTwo = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathTwo.setAttribute("d", "M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -5v5h5");
+    resetNode.appendChild(pathTwo);
+
+    const pathThree = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathThree.setAttribute("d", "M4 13a8.1 8.1 0 0 0 15.5 2m.5 5v-5h-5");
+    resetNode.appendChild(pathThree);
+
     resetNode.setAttribute("onclick", `resetFilter('${filter.name}')`);
     resetNode.className = "reset-btn";
     filterNode.appendChild(resetNode);
